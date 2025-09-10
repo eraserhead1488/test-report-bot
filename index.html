@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Отчёт о закрытии смены</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="stylesheet.css">
+
+  <style>
+    html, body {
+      height: 100%;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .container {
+      max-wight: 420vh;
+      padding-bottom: 30px;
+      margin: auto;
+    }
+
+    body {
+      background-color: #121212;
+      font-family: 'TT Squares', sans-serif;
+      color: #fbff80;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .container {
+      max-width: 420px;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      font-family: 'TT Squares', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 8px rgba(255, 243, 0, 0.3);
+    }
+
+    .btn-icon-submit {
+      background-color: transparent;
+      border: none;
+      padding: 12px;
+      width: 90px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      transition: all 0.2s ease;
+    }
+
+    .btn-icon-submit svg {
+      width: 90px;
+      height: 90px;
+      fill: #fff957;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-icon-submit:hover svg {
+      transform: scale(1.3);
+      filter: drop-shadow(0 0 9px rgba(223, 255, 82, 0.8));
+    }
+
+    input, select {
+      background-color: #333239 !important;
+      border: 1px solid #444 !important;
+      color: #fff !important;
+      border-radius: 8px;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.05);
+    }
+
+    input::placeholder {
+      color: #625c6a !important;
+    }
+
+    input:focus, select:focus {
+      border-color: #ffff61 !important;
+      box-shadow: 0 0 6px rgba(245, 232, 50, 0.3) !important;
+      outline: none !important;
+    }
+
+    label {
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    form {
+      background-color: #1c1c1c;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.06);
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container mt-4">
+    <h2 class="text-center">Отчёт о закрытии смены</h2>
+    <form id="reportForm" autocomplete="off">
+      <label class="form-label">Дата:</label>
+      <input type="date" name="date" class="form-control mb-3" required />
+
+      <label class="form-label">Администратор:</label>
+      <select name="admin" class="form-select mb-3" required>
+        <option value="Полина">Полина</option>
+        <option value="Емеля">Емеля</option>
+        <option value="Маша">Маша</option>
+        <option value="Лёша">Лёша</option>
+      </select>
+
+      <label class="form-label">Смена:</label>
+      <select name="shift_type" class="form-select mb-3" required>
+        <option value="День">День</option>
+        <option value="Ночь">Ночь</option>
+      </select>
+
+      <input type="text" name="cash" placeholder="Остаток в кассе" class="form-control mb-3" required />
+      <input type="text" name="shift_cash" placeholder="Наличные" class="form-control mb-3" required />
+      <input type="text" name="terminal" placeholder="Терминал" class="form-control mb-3" required />
+      <input type="text" name="cloudpay" placeholder="CloudPayments" class="form-control mb-3" required />
+      <input type="text" name="newpay" placeholder="NewPay" class="form-control mb-4" required />
+
+      <button type="submit" class="btn-icon-submit">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="#f5e832" class="bi bi-check-square" viewBox="0 0 24 24">
+          <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+          <path d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.235.235 0 0 1 .02-.022z"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    window.addEventListener('load', () => {
+      const tg = window.Telegram.WebApp;
+      tg.expand();
+
+      const dateInput = document.querySelector('input[type="date"]');
+      if (dateInput && !dateInput.value) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateInput.value = `${yyyy}-${mm}-${dd}`;
+      }
+
+      document.getElementById('reportForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+
+        const dateParts = data.date.split("-");
+        if (dateParts.length === 3) {
+          data.date = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
+        }
+
+        tg.sendData(JSON.stringify(data));
+        tg.close();
+      });
+    });
+  </script>
+</body>
+</html>
