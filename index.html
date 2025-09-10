@@ -1,117 +1,40 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF‑8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Отчёт о закрытии смены</title>
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="stylesheet.css">
-
   <style>
-    html, body {
-      height: 100%;
-      min-height: 100vh;
-      overflow-y: auto;
+    /* Добавим минимальные стили для блока загрузки */
+    #screenshot-area {
+      border: 2px dashed #555;
+      padding: 20px;
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      position: relative;
     }
-
-    .container {
-      max-wight: 420vh;
-      padding-bottom: 30px;
-      margin: auto;
+    #screenshot-area.dragover {
+      background-color: rgba(245,232,50,0.1);
+      border-color: #f5e832;
+      color: #f5e832;
     }
-
-    body {
-      background-color: #121212;
-      font-family: 'TT Squares', sans-serif;
-      color: #fbff80;
-      transition: all 0.3s ease-in-out;
-    }
-
-    .container {
-      max-width: 420px;
-      animation: fadeIn 0.6s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    h2 {
-      font-family: 'TT Squares', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 400;
-      letter-spacing: 0.5px;
-      margin-bottom: 1.5rem;
-      text-shadow: 0 0 8px rgba(255, 243, 0, 0.3);
-    }
-
-    .btn-icon-submit {
-      background-color: transparent;
-      border: none;
-      padding: 12px;
-      width: 90px;
-      height: 90px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto;
-      transition: all 0.2s ease;
-    }
-
-    .btn-icon-submit svg {
-      width: 90px;
-      height: 90px;
-      fill: #fff957;
-      transition: transform 0.2s ease;
-    }
-
-    .btn-icon-submit:hover svg {
-      transform: scale(1.3);
-      filter: drop-shadow(0 0 9px rgba(223, 255, 82, 0.8));
-    }
-
-    input, select {
-      background-color: #333239 !important;
-      border: 1px solid #444 !important;
-      color: #fff !important;
-      border-radius: 8px;
-      transition: border 0.2s, box-shadow 0.2s;
-      box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.05);
-    }
-
-    input::placeholder {
-      color: #625c6a !important;
-    }
-
-    input:focus, select:focus {
-      border-color: #ffff61 !important;
-      box-shadow: 0 0 6px rgba(245, 232, 50, 0.3) !important;
-      outline: none !important;
-    }
-
-    label {
+    #screenshot-preview {
+      max-width: 100%;
       margin-top: 10px;
-      font-weight: 500;
-    }
-
-    form {
-      background-color: #1c1c1c;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 25px rgba(255, 255, 255, 0.06);
-      max-height: calc(100vh - 100px);
-      overflow-y: auto;
+      display: none;
+      border-radius: 8px;
     }
   </style>
 </head>
-
 <body>
-  <div class="container mt-4">
-    <h2 class="text-center">Отчёт о закрытии смены</h2>
-    <form id="reportForm" autocomplete="off">
+  <div class="container mt-5">
+    <h2 class="mb-4 text-center">Отчёт о закрытии смены</h2>
+    <form id="reportForm" autocomplete="off" class="p-4 bg-dark rounded shadow-sm">
       <label class="form-label">Дата:</label>
       <input type="date" name="date" class="form-control mb-3" required />
 
@@ -123,55 +46,84 @@
         <option value="Лёша">Лёша</option>
       </select>
 
-      <label class="form-label">Смена:</label>
-      <select name="shift_type" class="form-select mb-3" required>
-        <option value="День">День</option>
-        <option value="Ночь">Ночь</option>
-      </select>
+      <label class="form-label">Остаток в кассе:</label>
+      <input type="text" name="cash" placeholder="Остаток в кассе" class="form-control mb-4" required />
 
-      <input type="text" name="cash" placeholder="Остаток в кассе" class="form-control mb-3" required />
-      <input type="text" name="shift_cash" placeholder="Наличные" class="form-control mb-3" required />
-      <input type="text" name="terminal" placeholder="Терминал" class="form-control mb-3" required />
-      <input type="text" name="cloudpay" placeholder="CloudPayments" class="form-control mb-3" required />
-      <input type="text" name="newpay" placeholder="NewPay" class="form-control mb-4" required />
+      <div id="screenshot-area">
+        Перетащи сюда скриншот или нажми Ctrl+V
+        <img id="screenshot-preview" alt="Preview" />
+        <input type="file" id="screenshot-input" accept="image/*" style="display:none" />
+      </div>
 
-      <button type="submit" class="btn-icon-submit">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="#f5e832" class="bi bi-check-square" viewBox="0 0 24 24">
-          <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-          <path d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.235.235 0 0 1 .02-.022z"/>
-        </svg>
-      </button>
+      <button type="submit" class="btn btn-primary w-100">Отправить отчёт</button>
     </form>
   </div>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    window.addEventListener('load', () => {
-      const tg = window.Telegram.WebApp;
-      tg.expand();
+    const tg = window.Telegram.WebApp;
+    tg.expand();
 
-      const dateInput = document.querySelector('input[type="date"]');
-      if (dateInput && !dateInput.value) {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        dateInput.value = `${yyyy}-${mm}-${dd}`;
+    const form = document.getElementById("reportForm");
+    const screenshotArea = document.getElementById("screenshot-area");
+    const screenshotInput = document.getElementById("screenshot-input");
+    const preview = document.getElementById("screenshot-preview");
+    let screenshotData = null;
+
+    screenshotArea.addEventListener("click", () => screenshotInput.click());
+
+    screenshotInput.addEventListener("change", () => {
+      const file = screenshotInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        screenshotData = reader.result;
+        preview.src = screenshotData;
+        preview.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    });
+
+    screenshotArea.addEventListener("paste", e => {
+      const item = e.clipboardData.items[0];
+      if (item && item.type.startsWith("image")) {
+        const file = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = () => {
+          screenshotData = reader.result;
+          preview.src = screenshotData;
+          preview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
       }
+    });
 
-      document.getElementById('reportForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
+    screenshotArea.addEventListener("dragover", e => {
+      e.preventDefault();
+      screenshotArea.classList.add("dragover");
+    });
+    screenshotArea.addEventListener("dragleave", () => {
+      screenshotArea.classList.remove("dragover");
+    });
+    screenshotArea.addEventListener("drop", e => {
+      e.preventDefault();
+      screenshotArea.classList.remove("dragover");
+      const file = e.dataTransfer.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        screenshotData = reader.result;
+        preview.src = screenshotData;
+        preview.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    });
 
-        const dateParts = data.date.split("-");
-        if (dateParts.length === 3) {
-          data.date = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
-        }
-
-        tg.sendData(JSON.stringify(data));
-        tg.close();
-      });
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.screenshot = screenshotData || "";
+      tg.sendData(JSON.stringify(data));
+      tg.close();
     });
   </script>
 </body>
